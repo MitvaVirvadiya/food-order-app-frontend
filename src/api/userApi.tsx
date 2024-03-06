@@ -3,7 +3,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { toast } from "sonner";
 import { User } from "@/types";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const useGetUser = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -16,38 +16,38 @@ export const useGetUser = () => {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
       },
-    })
+    });
 
-    if(!response.ok){
-      throw new Error("Failed to get user")
+    if (!response.ok) {
+      throw new Error("Failed to get user");
     }
 
-    return response.json()
-  }
+    return response.json();
+  };
 
   const {
     data: currentUser,
     isLoading,
-    error
-  } = useQuery("fetchCurrentUser", getUserRequest)
+    error,
+  } = useQuery("fetchCurrentUser", getUserRequest);
 
-  if(error){
-    toast.error(error.toString())
+  if (error) {
+    toast.error(error.toString());
   }
 
-  return { currentUser, isLoading }
-}
+  return { currentUser, isLoading };
+};
 
 type CreateUserRequest = {
   auth0Id: string;
-  email: string; 
+  email: string;
 };
 
 export const useCreateUser = () => {
   const { getAccessTokenSilently } = useAuth0();
 
   const createUserRequest = async (user: CreateUserRequest) => {
-    const accessToken = await getAccessTokenSilently()
+    const accessToken = await getAccessTokenSilently();
     const response = await fetch(`${API_BASE_URL}/api/user`, {
       method: "POST",
       headers: {
@@ -73,17 +73,17 @@ export const useCreateUser = () => {
 };
 
 type UpdateUserRequest = {
-  name: string,
-  address: string,
-  city: string,
-  country: string,
-}
+  name: string;
+  address: string;
+  city: string;
+  country: string;
+};
 
 export const useUpdateUser = () => {
   const { getAccessTokenSilently } = useAuth0();
 
   const updateUserRequest = async (formData: UpdateUserRequest) => {
-    const accessToken = await getAccessTokenSilently()
+    const accessToken = await getAccessTokenSilently();
     const response = await fetch(`${API_BASE_URL}/api/user`, {
       method: "PUT",
       headers: {
@@ -91,29 +91,29 @@ export const useUpdateUser = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(formData),
-    })
+    });
 
-    if(!response.ok){
-      throw new Error("Failed to update user")
+    if (!response.ok) {
+      throw new Error("Failed to update user");
     }
-  }
+  };
 
   const {
     mutateAsync: updateUser,
     isSuccess,
     isLoading,
     error,
-    reset
-  } = useMutation(updateUserRequest)
+    reset,
+  } = useMutation(updateUserRequest);
 
-  if(isSuccess){
-    toast.success("User updated successfully!")
+  if (isSuccess) {
+    toast.success("User updated successfully!");
   }
 
-  if(error){
-    toast.error("Failed to update user")
-    reset()
+  if (error) {
+    toast.error("Failed to update user");
+    reset();
   }
 
-  return { updateUser, isLoading }
-} 
+  return { updateUser, isLoading };
+};
