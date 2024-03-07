@@ -2,7 +2,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { FormControl, FormItem, FormLabel } from "@/components/ui/form";
 import {
   ControllerRenderProps,
-  FieldValue,
   FieldValues,
 } from "react-hook-form";
 
