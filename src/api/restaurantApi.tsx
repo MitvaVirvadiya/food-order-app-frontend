@@ -1,4 +1,4 @@
-import { Restaurant } from "@/types";
+import { Restaurant, searchRestaurantRequest } from "@/types";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useMutation, useQuery } from "react-query";
 import { toast } from "sonner";
@@ -77,7 +77,9 @@ export const useCreateRestaurant = () => {
 export const useUpdateRestaurant = () => {
   const { getAccessTokenSilently } = useAuth0();
 
-  const updateRestaurantRequest = async (restaurantFormData: FormData): Promise<Restaurant> => {
+  const updateRestaurantRequest = async (
+    restaurantFormData: FormData
+  ): Promise<Restaurant> => {
     const accessToken = await getAccessTokenSilently();
 
     const response = await fetch(`${API_BASE_URL}/api/restaurant`, {
@@ -111,4 +113,26 @@ export const useUpdateRestaurant = () => {
   }
 
   return { updateRestaurant, isLoading };
+};
+
+export const usesearchRestaurants = (city?: string) => {
+  const searchRestaurantsRequest = async (): Promise<searchRestaurantRequest> => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/restaurant/search/${city}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch restaurants");
+    }
+
+    return response.json();
+  };
+
+  const { data: restaurants, isLoading } = useQuery(
+    "searchRestaurants",
+    searchRestaurantsRequest,
+    { enabled: !!city }
+  );
+
+  return { restaurants, isLoading };
 };

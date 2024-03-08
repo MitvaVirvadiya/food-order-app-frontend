@@ -26,3 +26,12 @@ export type Restaurant = {
   imageUrl: string;
   lastUpdated: string;
 };
+
+export type searchRestaurantRequest = {
+  data: Restaurant[];
+  pagination: {
+    total: number;
+    page: number;
+    paged: number;
+  };
+};
