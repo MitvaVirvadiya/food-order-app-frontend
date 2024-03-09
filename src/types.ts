@@ -32,6 +32,6 @@ export type searchRestaurantRequest = {
   pagination: {
     total: number;
     page: number;
-    paged: number;
+    pages: number;
   };
 };
