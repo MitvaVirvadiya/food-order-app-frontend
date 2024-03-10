@@ -1,4 +1,5 @@
 import { usesearchRestaurants } from "@/api/restaurantApi";
+import CuisineFilter from "@/components/CuisineFilter";
 import Loading from "@/components/Loading";
 import PaginationSelector from "@/components/PaginationSelector";
 import SearchBar, { SearchForm } from "@/components/SearchBar";
@@ -9,7 +10,8 @@ import { useParams } from "react-router-dom";
 
 export type searchState = {
   searchQuery: string;
-  page: number
+  page: number;
+  selectedCuisine: string[];
 };
 
 const SearchPage = () => {
@@ -17,7 +19,9 @@ const SearchPage = () => {
   const [searchState, setSearchState] = useState<searchState>({
     searchQuery: "",
     page: 1,
+    selectedCuisine: [],
   });
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const { restaurants, isLoading } = usesearchRestaurants(searchState, city);
 
   const setSearchQuery = (searchFormData: SearchForm) => {
@@ -40,8 +44,16 @@ const SearchPage = () => {
     setSearchState((prevState) => ({
       ...prevState,
       page,
-    }))
-  }
+    }));
+  };
+
+  const setSelectedCuisine = (selectedCuisine: string[]) => {
+    setSearchState((prevState) => ({
+      ...prevState,
+      selectedCuisine,
+      page: 1,
+    }));
+  };
 
   if (isLoading) {
     return <Loading />;
@@ -53,7 +65,16 @@ const SearchPage = () => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-5">
-      <div>Cuisines here</div>
+      <div id="cuisine-list">
+        <CuisineFilter
+          selectedCuisines={searchState.selectedCuisine}
+          onChange={setSelectedCuisine}
+          isExpanded={isExpanded}
+          onExpandedClick={() =>
+            setIsExpanded((prevIsExpanded) => !prevIsExpanded)
+          }
+        />
+      </div>
       <div id="main-content" className="flex flex-col gap-5">
         <SearchBar
           searchQuery={searchState.searchQuery}
@@ -68,7 +89,11 @@ const SearchPage = () => {
         {restaurants.data.map((restaurant) => (
           <SearchResultCard restaurant={restaurant} />
         ))}
-        <PaginationSelector page={restaurants.pagination.page} pages={restaurants.pagination.pages} onPageChange={setPage} />
+        <PaginationSelector
+          page={restaurants.pagination.page}
+          pages={restaurants.pagination.pages}
+          onPageChange={setPage}
+        />
       </div>
     </div>
   );
