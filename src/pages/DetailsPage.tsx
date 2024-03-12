@@ -1,10 +1,12 @@
 import { useGetRestaurantDetails } from "@/api/restaurantApi";
+import CheckoutButton from "@/components/CheckoutButton";
 import Loading from "@/components/Loading";
 import MenuItem from "@/components/MenuItems";
 import OrderSummary from "@/components/OrderSummary";
 import RestaurantInfo from "@/components/RestaurantInfo";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { Card } from "@/components/ui/card";
+import { Card, CardFooter } from "@/components/ui/card";
+import { UserFormData } from "@/forms/user-profile-form/UserProfileForm";
 import { MenuItem as menuItemType } from "@/types";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
@@ -19,7 +21,10 @@ export type cartItem = {
 const DetailsPage = () => {
   const { restaurantId } = useParams();
   const { restaurant, isLoading } = useGetRestaurantDetails(restaurantId);
-  const [cartItems, setCartItems] = useState<cartItem[]>([]);
+  const [cartItems, setCartItems] = useState<cartItem[]>(() => {
+    const storedCart = sessionStorage.getItem(`cartItem-${restaurantId}`);
+    return storedCart ? JSON.parse(storedCart) : [];
+  });
 
   const addToCart = (menuItem: menuItemType) => {
     setCartItems((prevCartItem) => {
@@ -47,21 +52,36 @@ const DetailsPage = () => {
         ];
       }
 
+      sessionStorage.setItem(
+        `cartItem-${restaurantId}`,
+        JSON.stringify(updatedCart)
+      );
+
       return updatedCart;
     });
   };
 
   const removeFromCart = (cartItem: cartItem) => {
     setCartItems((prevCartItems) => {
-      const updatedCart = prevCartItems.filter((item) => item._id !== cartItem._id)
+      const updatedCart = prevCartItems.filter(
+        (item) => item._id !== cartItem._id
+      );
 
-      return updatedCart
-    })
-  }
+      sessionStorage.setItem(
+        `cartItem-${restaurantId}`,
+        JSON.stringify(updatedCart)
+      );
+      return updatedCart;
+    });
+  };
 
   if (isLoading || !restaurant) {
     return <Loading />;
   }
+
+  const onCheckout = (userFromData: UserFormData) => {
+    console.log("User data", userFromData);
+  };
 
   return (
     <div className="flex flex-col gap-10">
@@ -77,7 +97,10 @@ const DetailsPage = () => {
           <RestaurantInfo restaurant={restaurant} />
           <span className="text-2xl font-bold tracking-tight">Menu</span>
           {restaurant.menuItems.map((menuItem) => (
-            <MenuItem menuItem={menuItem} addToCart={() => addToCart(menuItem)}/>
+            <MenuItem
+              menuItem={menuItem}
+              addToCart={() => addToCart(menuItem)}
+            />
           ))}
         </div>
         <div>
@@ -87,6 +110,12 @@ const DetailsPage = () => {
               cartItems={cartItems}
               removeFromCart={removeFromCart}
             />
+            <CardFooter>
+              <CheckoutButton
+                onCheckout={onCheckout}
+                disabled={cartItems.length === 0}
+              />
+            </CardFooter>
           </Card>
         </div>
       </div>
