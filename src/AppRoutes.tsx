@@ -7,6 +7,7 @@ import ProtectedRoute from "./auth/ProtectedRoute";
 import RestaurantFormPage from "./pages/RestaurantFormPage";
 import SearchPage from "./pages/SearchPage";
 import DetailsPage from "./pages/DetailsPage";
+import OrderStatusPage from "./pages/OrderStatusPage";
 
 function AppRoutes() {
   return (
@@ -37,6 +38,14 @@ function AppRoutes() {
         }
       />
       <Route element={<ProtectedRoute />}>
+        <Route
+          path="/order-status"
+          element={
+            <Layout>
+              <OrderStatusPage />
+            </Layout>
+          }
+        />
         <Route
           path="/user-profile"
           element={
