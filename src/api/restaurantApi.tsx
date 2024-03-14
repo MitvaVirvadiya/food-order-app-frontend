@@ -189,7 +189,7 @@ export const useUpdateRestaurantStatus = () => {
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
-        body: updateOrderStatus.status,
+        body: JSON.stringify({ status: updateOrderStatus.status }),
       }
     );
 
@@ -204,7 +204,7 @@ export const useUpdateRestaurantStatus = () => {
     mutateAsync: updateRestaurantStatus,
     isLoading,
     isSuccess,
-    error,
+    isError,
     reset,
   } = useMutation(updateRestaurantStatusRequest);
 
@@ -212,7 +212,7 @@ export const useUpdateRestaurantStatus = () => {
     toast.success("Order status updated")
   }
 
-  if(error){
+  if(isError){
     toast.error("Unable to update order status")
     reset()
   }
